@@ -1,50 +1,73 @@
-# Rumbo: diagnóstico y reinicio del GPS para el radio del carro
+# Carola — reproductor de música para el radio del carro
 
-App pequeña e independiente de Carola. Sirve para tres cosas:
+App Android sencilla para escuchar la música de tus memorias USB en un radio con Android 9 (funciona desde Android 8).
 
-1. **Ver qué le pasa al GPS**: satélites visibles y en uso, fuerza de la señal, última posición y si el reloj del radio está desfasado.
-2. **Reiniciar el GPS con un botón**, sin reiniciar el radio. Borra los datos de asistencia y obliga al chip a buscar satélites desde cero.
-3. **Reinicio automático**: un vigilante en segundo plano que, si el GPS pasa cierto tiempo sin posición, lo reinicia solo. Anota en un registro cuándo se pierde la señal y si se recuperó sola o con el reinicio.
+**Qué hace**
 
-Si el radio tiene root, aparece además **Reinicio profundo**. Ese botón apaga la ubicación, detiene el servicio del chip GPS (Android lo vuelve a levantar) y la enciende de nuevo.
+- Detecta las USB conectadas al radio (también la memoria interna) y te deja navegar por carpetas.
+- Arma una vista de **Álbumes** y **Artistas** leyendo las etiquetas de las canciones.
+- **Portadas automáticas**, en este orden: `cover.jpg` / `folder.jpg` de la carpeta → la imagen dentro del MP3/FLAC → descarga desde **MusicBrainz / Cover Art Archive** (gratis, sin registro). Las descargadas se guardan en el radio, solo se descargan una vez.
+- Panel de reproducción grande para usar manejando: portada, fondo con los colores del disco, barra de tiempo, aleatorio, repetir y cola.
+- Sigue sonando en segundo plano, responde a los **botones del volante** y respeta las indicaciones del GPS (baja o pausa la música).
+- Recuerda la última canción y continúa al encender el carro.
+- Al conectar una USB se actualiza solo.
 
 ---
 
-## 1. Compilar con GitHub (igual que Carola)
+## 1. Obtener el APK con GitHub (recomendado, sin instalar nada)
 
-1. En GitHub: **+ → New repository**, nombre `rumbo`, **Private** → **Create repository**.
-2. Toca **uploading an existing file**, descomprime `Rumbo.zip` y arrastra **todo el contenido** de la carpeta `Rumbo`, incluida la carpeta oculta `.github`. Presiona **Commit changes**.
-   - Si la carpeta `.github` no se sube y Actions no arranca: usa **Actions → set up a workflow yourself**, nombra el archivo `build.yml`, pega el contenido de `.github/workflows/build.yml` y haz commit.
-3. En **Actions** espera la palomita verde (5–8 min). En **Artifacts** descarga **Rumbo-apk** → adentro está `app-debug.apk`.
+1. Crea una cuenta en [github.com](https://github.com) si no tienes.
+2. Arriba a la derecha: **+ → New repository**. Ponle nombre `carola`, déjalo **Private** y presiona **Create repository**.
+3. En la página del repositorio vacío, toca el enlace **uploading an existing file**.
+4. Descomprime `Carola.zip` en tu computadora, abre la carpeta `Carola` y **arrastra todo su contenido** (las carpetas `app`, `gradle`, `.github` y los demás archivos) a la página. Presiona **Commit changes**.
+   - Importante: la carpeta `.github` está oculta en algunos sistemas. Si no la ves, en Windows activa *Ver → Elementos ocultos*; en Mac presiona `Cmd + Shift + .`. Sin esa carpeta GitHub no compila.
+5. Ve a la pestaña **Actions**. Verás "Compilar APK" ejecutándose (tarda unos 5–8 minutos la primera vez).
+6. Cuando tenga la palomita verde, entra a esa ejecución y abajo, en **Artifacts**, descarga **Carola-apk**. Es un ZIP con el archivo `app-debug.apk` adentro.
 
-Si sale en rojo, copia las líneas con `e:` o `error:` y pégaselas a Claude.
+Cada vez que cambies algo del código y lo subas, GitHub vuelve a generar el APK.
 
-## 2. Instalar
+## 2. Instalar en el radio
 
-Copia `app-debug.apk` a una USB e instálalo desde el explorador de archivos del radio, igual que hiciste con Carola. Al abrirla, acepta el permiso de **ubicación**.
+1. Copia `app-debug.apk` a una memoria USB.
+2. En el radio: **Ajustes → Seguridad → Fuentes desconocidas** (o "Instalar apps desconocidas") y permítelo para el explorador de archivos.
+3. Abre el explorador de archivos del radio, entra a la USB y toca `app-debug.apk` → **Instalar**.
+4. Abre **Carola** y acepta el permiso de almacenamiento.
 
-## 3. Uso
+> Si el radio tiene una opción de "app de música predeterminada" o de qué app abrir con el botón *MEDIA*, puedes elegir Carola ahí.
 
-- **Reiniciar GPS**: tócalo cuando se pierda la señal. Un arranque en frío tarda de 30 s a 2 min en volver a fijar posición, menos si el carro está a cielo abierto.
-- **Reinicio automático**: déjalo encendido. Aparece una notificación fija "Rumbo vigilando el GPS". Si el radio manda el aviso de encendido, se reactiva solo al arrancar el carro.
-- **Reiniciar tras N s sin señal**: cada toque cambia el tiempo de espera (30, 60, 90, 120, 180 s). Si el reinicio no ayuda, la app espera más entre intentos (2, 4, 8 y 10 min) para no ciclar.
+## 3. Alternativa: Android Studio
 
-## 4. Cómo leer el diagnóstico (lo más útil)
+Abre la carpeta `Carola` en Android Studio (versión Koala o más reciente), espera a que sincronice y usa **Build → Build App Bundle(s) / APK(s) → Build APK(s)**.
 
-Cuando se le vaya la señal, abre Rumbo y mira la tarjeta de satélites:
+---
 
-| Lo que ves | Qué significa | Qué hacer |
+## Consejos
+
+- **Portadas sin internet**: si pones un `cover.jpg` en cada carpeta de álbum, se usa sin necesidad de descargar nada.
+- **Portadas por internet**: conecta el radio al hotspot del teléfono un rato y entra a **Álbumes**; las portadas se van bajando solas mientras recorres la lista. MusicBrainz permite una consulta por segundo, así que con muchos álbumes tarda unos minutos.
+- Si una carpeta se llama `Artista - Álbum` y las canciones no tienen etiquetas, se usa ese nombre para buscar la portada.
+- Si el radio monta la USB en una ruta rara y no aparece, revísalo en **Ajustes → Almacenamiento detectado** y avísame la ruta para agregarla.
+
+## Estructura del código
+
+| Archivo | Qué hace |
+|---|---|
+| `data/StorageRoots.kt` | Detecta las USB y lista carpetas/canciones |
+| `data/LibraryRepository.kt` | Lee etiquetas (título, artista, álbum) y las guarda en caché |
+| `data/CoverRepository.kt` | Busca portadas: carpeta → incrustada → internet |
+| `data/MusicBrainzClient.kt` | Consulta MusicBrainz y Cover Art Archive |
+| `player/PlaybackService.kt` | Reproductor en segundo plano (Media3/ExoPlayer) |
+| `MainViewModel.kt` | Une todo: cola, estado, reanudar, portada actual |
+| `ui/*` | Pantallas (Sonando, Carpetas, Álbumes, Artistas, Ajustes) |
+
+---
+
+## Historial de versiones
+
+| Versión | Estado | Qué trae |
 |---|---|---|
-| **0 visibles** | El chip no recibe nada: antena, cable o el servicio del GPS se trabó | Revisar antena y conector; probar *Reinicio profundo* o reiniciar el radio |
-| Varios visibles con **señal buena** pero **0 en uso** | Problema de software o de datos de asistencia | **Reiniciar GPS** debería resolverlo |
-| Visibles pero con **señal débil** (menos de 20 dB) | Antena mal ubicada o interferencia | Ver consejos abajo |
-| Aviso de **reloj desfasado** | Hora o fecha del radio incorrecta, cosa que al GPS le cuesta mucho | Activar hora automática en Ajustes |
-
-El **Registro** dice si la señal se recupera sola o solo con el reinicio. Con unos días de uso sabrás si es antena o software.
-
-## 5. Causas comunes en radios chinos (no son de software)
-
-- **Antena GPS**: casi siempre es un cubito externo pegado detrás del tablero. Debe quedar con vista al cielo, por ejemplo bajo la parte alta del tablero cerca del parabrisas, y no debajo de metal. Revisa que el conector esté bien apretado en el radio. Las antenas que traen estos radios son muy baratas y fallan seguido; reemplazarla cuesta poco.
-- **Interferencia**: cargadores USB baratos, cámaras de tablero y algunos LED meten ruido justo en la frecuencia del GPS. Prueba desconectarlos un rato y observa si cambia la señal.
-- **Parabrisas con película metalizada o polarizado atérmico**: bloquea bastante la señal.
-- **Fecha u hora mal** al encender, porque el radio pierde la hora al apagar el carro.
+| 3.2 | 🧪 En prueba | Gestos en la portada, eliminar canciones/carpetas/álbumes, firma fija, guardar/restaurar respaldo |
+| 3.1 | ✅ Estable | Ecualizador (presets + 5 bandas), vista grande de Sonando en pantalla completa |
+| **3.0** | ✅ Estable (probada en el carro, 16-nov-2026) | Favoritas, Más escuchadas, listas propias, listas .m3u de la USB, Continuar por carpeta/álbum, ❤️ y ➕ en Sonando, diseño compacto para pantallas bajas |
+| 2.0 | ✅ Estable | Nivelación de volumen (ReplayGain + nivelador), búsqueda sin acentos |
+| 1.x | ✅ Estable | Reproductor base, carpetas, álbumes, artistas, portadas (MusicBrainz), vinil animado, carpetas de música marcadas |
